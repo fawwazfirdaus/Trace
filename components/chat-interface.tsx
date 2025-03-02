@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+  isTyping?: boolean;
 }
 
 interface ChatInterfaceProps {
@@ -47,8 +48,8 @@ const generateResponse = async (nodeId: string, message: string): Promise<string
     ]
   };
 
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  // Simulate API delay - longer to seem more realistic
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
   // Get random response for the node type or return default
   if (nodeId in responses) {
@@ -70,14 +71,15 @@ const generateResponse = async (nodeId: string, message: string): Promise<string
 };
 
 export function ChatInterface({ nodeId }: ChatInterfaceProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: 'assistant',
-      content: 'Ask me any questions about this aspect of the case.'
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-scroll to the bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (inputValue.trim() === '') return;
@@ -95,12 +97,38 @@ export function ChatInterface({ nodeId }: ChatInterfaceProps) {
       // Get AI response
       const response = await generateResponse(nodeId, inputValue);
       
-      // Add AI message
+      // Add placeholder AI message for typing animation
       const aiMessage: ChatMessage = {
         role: 'assistant',
-        content: response
+        content: '',
+        isTyping: true
       };
       setMessages(prev => [...prev, aiMessage]);
+      setIsLoading(false);
+      
+      // Simulate typing effect
+      let currentIndex = 0;
+      const typingInterval = setInterval(() => {
+        if (currentIndex < response.length) {
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            lastMessage.content += response.charAt(currentIndex);
+            return newMessages;
+          });
+          currentIndex++;
+        } else {
+          // Remove typing indicator when done
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            lastMessage.isTyping = false;
+            return newMessages;
+          });
+          clearInterval(typingInterval);
+        }
+      }, 15); // Typing speed - lower number is faster
+      
     } catch (error) {
       console.error('Error generating response:', error);
       // Add error message
@@ -109,7 +137,6 @@ export function ChatInterface({ nodeId }: ChatInterfaceProps) {
         content: 'Sorry, I encountered an error while processing your question.'
       };
       setMessages(prev => [...prev, errorMessage]);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -127,31 +154,46 @@ export function ChatInterface({ nodeId }: ChatInterfaceProps) {
             <div
               className={`max-w-[80%] rounded-lg p-3 ${
                 message.role === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted'
+                  ? 'bg-blue-600/40 backdrop-blur-sm border border-blue-500/30 text-white'
+                  : 'bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 text-gray-100'
               }`}
             >
-              {message.content}
+              {message.role === 'assistant' && (
+                <div className="flex items-center mb-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse mr-2"></div>
+                  <span className="text-xs font-medium text-blue-300">TRACE AI</span>
+                </div>
+              )}
+              <p className="text-sm whitespace-pre-line">{message.content}</p>
+              
+              {message.role === 'assistant' && message.isTyping && (
+                <div className="flex mt-1">
+                  <div className="w-1.5 h-1.5 bg-blue-300/50 rounded-full animate-pulse"></div>
+                  <div className="w-1.5 h-1.5 bg-blue-300/50 rounded-full animate-pulse mx-1" style={{ animationDelay: "0.2s" }}></div>
+                  <div className="w-1.5 h-1.5 bg-blue-300/50 rounded-full animate-pulse" style={{ animationDelay: "0.4s" }}></div>
+                </div>
+              )}
             </div>
           </div>
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-lg p-3 bg-muted">
+            <div className="max-w-[80%] rounded-lg p-3 bg-gray-800/60 backdrop-blur-sm border border-gray-700/50">
               <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-slate-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-2 h-2 bg-slate-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="w-2 h-2 bg-slate-500 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
               </div>
             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
       
-      <div className="p-4 border-t">
-        <div className="flex space-x-2">
+      <div className="border-t border-gray-800 pt-4 mt-4 px-4 pb-4">
+        <div className="relative">
           <Input
-            placeholder="Ask a question about this aspect of the case..."
+            placeholder="Ask a question..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={(e) => {
@@ -160,12 +202,16 @@ export function ChatInterface({ nodeId }: ChatInterfaceProps) {
               }
             }}
             disabled={isLoading}
+            className="w-full bg-black/30 border border-gray-700 rounded-md py-2 px-4 text-white text-sm placeholder-gray-500"
           />
           <Button 
             onClick={handleSendMessage} 
             disabled={isLoading || inputValue.trim() === ''}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-400 hover:text-blue-300 transition-colors bg-transparent border-none hover:bg-transparent"
           >
-            Send
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+            </svg>
           </Button>
         </div>
       </div>

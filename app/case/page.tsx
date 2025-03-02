@@ -58,6 +58,39 @@ export default function CasePage() {
             type: "people",
             title: "Osama Bin Laden",
             summary: "Founder and leader of al-Qaeda who claimed responsibility for the 9/11 attacks. He authorized and funded the operation through a network of cells and couriers. Bin Laden was located and killed in Pakistan in May 2011.",
+            reference: "/first-upload/intel.pdf",
+            children: [
+              {
+                id: "toraBora",
+                type: "people",
+                title: "Tora Bora",
+                summary: "Mountain complex in eastern Afghanistan where Osama bin Laden escaped U.S. forces in December 2001. The cave system served as a fortress hideout during the early stages of the U.S.-led invasion following the 9/11 attacks.",
+                parentId: "people"
+              },
+              {
+                id: "tapedMessages",
+                type: "people",
+                title: "Taped Messages",
+                summary: "Series of video and audio recordings released periodically after 9/11 in which bin Laden claimed responsibility for the attacks and threatened further actions. These messages were authenticated by intelligence agencies and used to track his continued activities.",
+                parentId: "people",
+                reference: "/first-upload/intel.pdf"
+              },
+              {
+                id: "finalHideout",
+                type: "people",
+                title: "Final Hideout",
+                summary: "Compound in Abbottabad, Pakistan, where bin Laden lived in seclusion from approximately 2005 until his death in May 2011. The three-story structure was located less than a mile from Pakistan's premier military academy.",
+                parentId: "people"
+              },
+              {
+                id: "courierNetwork",
+                type: "people",
+                title: "Courier Network",
+                summary: "System of trusted messengers used by bin Laden to communicate with al-Qaeda operatives while avoiding electronic detection. The identification and tracking of his primary courier, Abu Ahmed al-Kuwaiti, eventually led U.S. intelligence to the Abbottabad compound.",
+                parentId: "people",
+                reference: "/first-upload/courier.pdf"
+              }
+            ]
           },
           {
             id: "alQaedaMembers",
@@ -100,6 +133,25 @@ export default function CasePage() {
             type: "similar",
             title: "CIA Investigation",
             summary: "One of history's largest intelligence operations that identified the perpetrators and their support networks. Key breakthroughs included tracking bin Laden's courier network and revealing critical pre-attack intelligence failures.",
+            reference: "/first-upload/courier.pdf",
+            children: [
+              {
+                id: "cctvFootages",
+                type: "similar",
+                title: "CCTV Footages",
+                summary: "Surveillance camera footage collected from airports and other locations showing the 9/11 hijackers' movements before the attacks. These visual records were crucial in reconstructing the attackers' activities and establishing a timeline of events.",
+                parentId: "ciaInvestigation",
+                reference: "/first-upload/intel.pdf"
+              },
+              {
+                id: "fingerprints",
+                type: "similar",
+                title: "Fingerprint Evidence",
+                summary: "Fingerprints retrieved from various locations including vehicles, hotel rooms, and flight training facilities that were linked to the hijackers. This physical evidence provided concrete connections between suspects and key locations in the attack planning.",
+                parentId: "ciaInvestigation",
+                reference: "/first-upload/intel.pdf"
+              }
+            ]
           }
         ]
       };
