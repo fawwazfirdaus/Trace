@@ -6,8 +6,9 @@ Trace is an interactive knowledge graph application designed for investigative r
 
 - Create investigations with a case name and supporting documents
 - Upload multiple documents at once with drag-and-drop support
-- Interactive knowledge graph visualization (coming soon)
-- Draggable branches and nodes for organizing information (coming soon)
+- Interactive knowledge graph visualization using ReactFlow
+- State management with Zustand for seamless user experience
+- Responsive and modern UI with shadcn/ui components
 
 ## Tech Stack
 
@@ -15,6 +16,8 @@ Trace is an interactive knowledge graph application designed for investigative r
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
 - [shadcn/ui](https://ui.shadcn.com/) - UI components
+- [ReactFlow](https://reactflow.dev/) - Graph visualization
+- [Zustand](https://zustand-demo.pmnd.rs/) - State management
 
 ## Getting Started
 
@@ -43,17 +46,25 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Project Structure
 
 - `/app` - Next.js app directory with pages and layouts
+  - `/app/case` - Case-specific pages and functionality
+  - `/app/components` - App-specific components
 - `/components` - Reusable UI components
   - `/components/ui` - shadcn/ui components
 - `/lib` - Utility functions and shared code
 - `/public` - Static assets
+- `/types` - TypeScript type definitions
+- `/styles` - Global styles and Tailwind configurations
+- `/scripts` - Project utility scripts
 
 ## Development Roadmap
 
 - [x] Initial setup with Next.js, TypeScript, Tailwind CSS, and shadcn/ui
 - [x] Home page with case creation form
 - [x] File upload functionality
-- [ ] Knowledge graph visualization
-- [ ] Drag-and-drop node editing
+- [x] Knowledge graph visualization
+- [x] Drag-and-drop node editing
+- [x] Basic knowledge graph visualization setup
+- [ ] Advanced graph interaction features
 - [ ] Document analysis and entity extraction
-- [ ] Case export functionality 
+- [ ] Case export functionality
+- [ ] Collaborative editing features 
