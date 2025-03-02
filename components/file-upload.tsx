@@ -84,7 +84,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesSelected, className }) =
             drop
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Upload any file format
+            Upload documents, images, audio, or video files
           </p>
         </div>
         <input
@@ -93,6 +93,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesSelected, className }) =
           type="file"
           className="hidden"
           multiple
+          accept=".pdf,.doc,.docx,.txt,.md,.jpg,.jpeg,.png,.gif,.mp3,.wav,.ogg,.mp4,.mov,.avi"
           onChange={handleChange}
         />
       </div>
@@ -110,7 +111,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesSelected, className }) =
                       {file.name}
                     </p>
                     <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                      {(file.size / 1024).toFixed(2)} KB
+                      {(file.size / 1024).toFixed(2)} KB • {getFileTypeLabel(file.type)}
                     </p>
                   </div>
                 </div>
@@ -122,5 +123,16 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesSelected, className }) =
     </div>
   );
 };
+
+// Helper function to get a user-friendly file type label
+function getFileTypeLabel(mimeType: string): string {
+  if (mimeType.startsWith('image/')) return 'Image';
+  if (mimeType.startsWith('audio/')) return 'Audio';
+  if (mimeType.startsWith('video/')) return 'Video';
+  if (mimeType.includes('pdf')) return 'PDF';
+  if (mimeType.includes('word') || mimeType.includes('doc')) return 'Document';
+  if (mimeType.includes('text')) return 'Text';
+  return 'File';
+}
 
 export default FileUpload; 

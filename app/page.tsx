@@ -13,20 +13,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import FileUpload from "@/components/file-upload";
 
 export default function Home() {
   const router = useRouter();
   const [caseName, setCaseName] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [enableDatabase, setEnableDatabase] = useState(false);
 
   const handleFilesSelected = (files: File[]) => {
     setSelectedFiles(files);
   };
 
   const handleBuildCase = () => {
-    // Instead of actually processing files, navigate to the case page
-    router.push(`/case?name=${encodeURIComponent(caseName)}`);
+    // Pass the enableDatabase parameter in the URL
+    router.push(`/case?name=${encodeURIComponent(caseName)}&db=${enableDatabase ? '1' : '0'}`);
   };
 
   return (
@@ -60,6 +62,17 @@ export default function Home() {
             <div className="space-y-2">
               <Label>Upload Documents</Label>
               <FileUpload onFilesSelected={handleFilesSelected} />
+            </div>
+
+            <div className="flex items-center space-x-2 pt-2">
+              <Switch
+                id="database-mode"
+                checked={enableDatabase}
+                onCheckedChange={setEnableDatabase}
+              />
+              <Label htmlFor="database-mode" className="cursor-pointer">
+                Enable searching through database for preexisting knowledge
+              </Label>
             </div>
           </CardContent>
           <CardFooter>
